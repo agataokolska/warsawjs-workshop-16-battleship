@@ -67,9 +67,10 @@ const gameboardArray = [
   }
 
   class Cell extends BaseElement {
-    construktor({isShip}) { 
+    constructor({isShip, gameboard}) { 
     super();
     this.isShip = isShip;
+    this.gameboard = gameboard;
     this.state = 'unknown';
     this.onClick = this.fireTorpedo;
     }
@@ -86,6 +87,19 @@ const gameboardArray = [
 
     fireTorpedo() {
         if (this.isShip) { //this.isShip === true
+            if (this.state !== 'unknown') {
+                return false;
+            }
+
+            this.gameboard.score +=1;
+
+            gameResult.innerHtml = '';
+            while (gameResult.firstChild) {
+                gameResult.removeChild(gameResult.firstChild);
+            }
+    
+            gameResult.append(`${gameboard.score}/${gameboard.totalScore}`)
+
             this.setState('hit');
         } else {
             this.setState('miss');
@@ -103,21 +117,24 @@ const gameboardArray = [
   }
 
   class Gameboard extends BaseElement {
-    construktor(size) {
+    constructor(size) {
         super();
         this.cells = [];
         this.rowNumber = size;
         this.columnNumber = size;
-        this.fleet = gameboardArray[Match.floor(Math.random() * gameboardArray.length)];
+        this.fleet = gameboardArray[Math.floor(Math.random() * gameboardArray.length)];
         this.score = 0;
         this.totalScore = this.getTotalScore(this.fleet);
-
+        
         for (let rowIndex = 0; rowIndex < this.rowNumber; ++rowIndex) {
             for(let columnIndex = 0; columnIndex < this.columnNumber; ++columnIndex)
             this.cells.push(new Cell({
-            isShip: this.fleet.array[rowIndex][columnIndex] === 1 ? true : false //if else
+            isShip: this.fleet.array[rowIndex][columnIndex] === 1 ? true : false,  //if else
+            gameboard: this
             }));
         }
+
+        gameResult.append(`${this.score}/${this.totalScore}`);
     }
 
     createElement() {
@@ -157,3 +174,4 @@ const gameboardArray = [
  const gameResult = document.getElementById('gameResult');
  const gameboard = new Gameboard(10);
  gameboardContainer.appendChild(gameboard.setElement());
+
