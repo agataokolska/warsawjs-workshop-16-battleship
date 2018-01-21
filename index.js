@@ -86,6 +86,12 @@ const gameboardArray = [
     }
 
     fireTorpedo() {
+        this.gameboard.totalClicks += 1;
+
+        if (this.gameboard.totalCliks > 30) {
+            alert('Przegrales!');
+        }
+
         if (this.isShip) { //this.isShip === true
             if (this.state !== 'unknown') {
                 return false;
@@ -98,10 +104,16 @@ const gameboardArray = [
                 gameResult.removeChild(gameResult.firstChild);
             }
     
-            gameResult.append(`${gameboard.score}/${gameboard.totalScore}`)
+            gameResult.append(`${gameboard.score}/${gameboard.totalScore}/${this.gameboard.totalClicks}`)
 
             this.setState('hit');
         } else {
+            while(gameResult.firstChild) {
+                gameResult.removeChild(gameResult.firstChild);
+            }
+
+            gameResult.append(`${gameboard.score}/${gameboard.totalScore}/${this.gameboard.totalClicks}`)
+
             this.setState('miss');
         }
     }
@@ -125,6 +137,7 @@ const gameboardArray = [
         this.fleet = gameboardArray[Math.floor(Math.random() * gameboardArray.length)];
         this.score = 0;
         this.totalScore = this.getTotalScore(this.fleet);
+        this.totalClicks = 0;
         
         for (let rowIndex = 0; rowIndex < this.rowNumber; ++rowIndex) {
             for(let columnIndex = 0; columnIndex < this.columnNumber; ++columnIndex)
